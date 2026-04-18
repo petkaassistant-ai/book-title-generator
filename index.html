@@ -221,53 +221,6 @@
       color: var(--accent);
     }
 
-    .examples {
-      max-width: 600px;
-      padding: 0 1.5rem;
-      margin-top: 3.5rem;
-    }
-
-    .examples h2 {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 1.3rem;
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: var(--text);
-    }
-
-    .pattern-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1rem;
-    }
-
-    .pattern-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.25rem;
-    }
-
-    .pattern-card h3 {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 0.95rem;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-    }
-
-    .pattern-card .formula {
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-style: italic;
-      margin-bottom: 0.5rem;
-    }
-
-    .pattern-card .real-books {
-      font-size: 0.78rem;
-      color: #999;
-      line-height: 1.5;
-    }
-
     .counter {
       text-align: center;
       margin-top: 2.5rem;
@@ -358,11 +311,6 @@
     <div class="counter" id="counter"></div>
   </div>
 
-  <div class="examples">
-    <h2>The Proven Formulas</h2>
-    <div class="pattern-grid" id="pattern-grid"></div>
-  </div>
-
   <footer>
     <p>A silly project by <a href="https://chalkstream.digital" target="_blank">Chalkstream Digital</a></p>
     <p style="margin-top:0.5rem; font-size:0.75rem;">No actual publishing deals were harmed in the making of this website.</p>
@@ -380,7 +328,12 @@ const jobs = [
   'Beekeeper', 'Stonemason', 'Falconer', 'Vintner', 'Puppeteer',
   'Blacksmith', 'Lamplighter', 'Ferryman', 'Milliner', 'Antiquarian',
   'Archaeologist', 'Silversmith', 'Watchmaker', 'Saddler', 'Cooper',
-  'Chandler', 'Midwife', 'Undertaker', 'Cobbler', 'Tanner'
+  'Chandler', 'Midwife', 'Undertaker', 'Cobbler', 'Tanner',
+  'Fishmonger', 'Chimney Sweep', 'Taxidermist', 'Candlestick Maker',
+  'Dog Walker', 'Traffic Warden', 'Plumber', 'Dentist', 'Accountant',
+  'Estate Agent', 'Quantity Surveyor', 'IT Consultant', 'Lollipop Lady',
+  'Sous Chef', 'Wheelwright', 'Cheese Grader', 'Bee Whisperer',
+  'Piano Tuner', 'Hat Blocker', 'Turnip Farmer', 'Oyster Shucker'
 ];
 
 const exoticPlaces = [
@@ -389,7 +342,11 @@ const exoticPlaces = [
   'Tangier', 'Jaipur', 'Havana', 'Thessaloniki', 'Reykjavik',
   'Trieste', 'Valparaiso', 'Isfahan', 'Fez', 'Kyoto',
   'Lisbon', 'Seville', 'Gdansk', 'Palermo', 'Bergen',
-  'Sarajevo', 'Oporto', 'Tallinn', 'Split', 'Lhasa'
+  'Sarajevo', 'Oporto', 'Tallinn', 'Split', 'Lhasa',
+  'Slough', 'Grimsby', 'Basingstoke', 'Croydon', 'Swindon',
+  'Wolverhampton', 'Scunthorpe', 'Milton Keynes', 'Neasden',
+  'Dunstable', 'Bognor Regis', 'Cleethorpes', 'Luton',
+  'Skegness', 'Peterborough', 'Doncaster', 'Hartlepool'
 ];
 
 const persons = [
@@ -402,7 +359,11 @@ const pastVerbs = [
   'Painted', 'Forgot', 'Counted', 'Collected', 'Measured',
   'Sang to', 'Dreamed of', 'Whispered to', 'Chased', 'Mended',
   'Smuggled', 'Mapped', 'Tasted', 'Sheltered', 'Catalogued',
-  'Bottled', 'Hoarded', 'Untangled', 'Stitched', 'Decoded'
+  'Bottled', 'Hoarded', 'Untangled', 'Stitched', 'Decoded',
+  'Microwaved', 'Sat on', 'Licked', 'Ironed', 'Alphabetised',
+  'Sniffed', 'Polished', 'Laundered', 'Composted', 'Laminated',
+  'Stapled', 'Defrosted', 'Vacuum-Packed', 'Knitted', 'Marinaded',
+  'Photobombed', 'Befriended', 'Outlived', 'Misplaced', 'Rehomed'
 ];
 
 const objects = [
@@ -410,7 +371,11 @@ const objects = [
   'Storms', 'Thorns', 'Bones', 'Embers', 'Orchids',
   'Foxes', 'Serpents', 'Moths', 'Thistles', 'Ravens',
   'Pearls', 'Ashes', 'Feathers', 'Stones', 'Riddles',
-  'Clocks', 'Letters', 'Keys', 'Lanterns', 'Compasses'
+  'Clocks', 'Letters', 'Keys', 'Lanterns', 'Compasses',
+  'Turnips', 'Pigeons', 'Curtains', 'Sausages', 'Receipts',
+  'Radiators', 'Cushions', 'Spatulas', 'Sandwiches', 'Batteries',
+  'Wasps', 'Lawnmowers', 'Toasters', 'Slippers', 'Chutneys',
+  'Yoghurts', 'Flagstones', 'Crumpets', 'Budgies', 'Courgettes'
 ];
 
 const adjectives = [
@@ -419,7 +384,10 @@ const adjectives = [
   'Seventh', 'Distant', 'Wicked', 'Amber', 'Crimson',
   'Silver', 'Emerald', 'Frozen', 'Burning', 'Moonlit',
   'Broken', 'Stolen', 'Sleeping', 'Glass', 'Paper',
-  'Velvet', 'Hollow', 'Starless', 'Bitter', 'Wild'
+  'Velvet', 'Hollow', 'Starless', 'Bitter', 'Wild',
+  'Damp', 'Slightly Stale', 'Lukewarm', 'Beige', 'Mildly Inconvenient',
+  'Oddly Specific', 'Unnecessary', 'Reluctant', 'Suspicious', 'Unfortunate',
+  'Tepid', 'Adequate', 'Unremarkable', 'Soggy', 'Vaguely Threatening'
 ];
 
 const abstractNouns = [
@@ -435,7 +403,9 @@ const abstractNouns2 = [
   'Flames', 'Feathers', 'Shadows', 'Stars', 'Storms',
   'Daggers', 'Embers', 'Secrets', 'Wishes', 'Nightmares',
   'Serpents', 'Ruins', 'Crowns', 'Ravens', 'Blossoms',
-  'Wolves', 'Bones', 'Ghosts', 'Echoes', 'Sparrows'
+  'Wolves', 'Bones', 'Ghosts', 'Echoes', 'Sparrows',
+  'Sandwiches', 'Receipts', 'Tupperware', 'Grudges', 'Cardigans',
+  'Spreadsheets', 'Parking Tickets', 'Crumbs', 'Ringtones', 'Biscuits'
 ];
 
 const firstNames = [
@@ -452,14 +422,19 @@ const pluralNouns = [
   'Husbands', 'Lives', 'Deaths', 'Secrets', 'Letters',
   'Winters', 'Summers', 'Sins', 'Lies', 'Daughters',
   'Sorrows', 'Songs', 'Silences', 'Faces', 'Names',
-  'Doors', 'Rooms', 'Gardens', 'Bridges', 'Mirrors'
+  'Doors', 'Rooms', 'Gardens', 'Bridges', 'Mirrors',
+  'Cats', 'Breakfasts', 'Caravan Holidays', 'Parking Spaces',
+  'Regrets', 'Sandals', 'Sheds', 'Allergies', 'Toothbrushes'
 ];
 
 const locations = [
   'the Forest', 'the Mountain', 'the Sea', 'the River', 'the Desert',
   'the Attic', 'the Garden', 'the Cellar', 'the Tower', 'the Bridge',
   'the Lake', 'the Orchard', 'the Marshes', 'the Ruins', 'the Chapel',
-  'the Harbour', 'the Moor', 'the Cliff', 'the Lighthouse', 'the Abbey'
+  'the Harbour', 'the Moor', 'the Cliff', 'the Lighthouse', 'the Abbey',
+  'the Roundabout', 'the Car Park', 'the Utility Room', 'the Queue',
+  'the Soft Play', 'the Skip', 'the Shed', 'the Bypass', 'the Cul-de-Sac',
+  'the Retail Park', 'the Layby', 'the Self-Checkout'
 ];
 
 const stickers = [
@@ -476,7 +451,13 @@ const stickers = [
   'Water-\nstones\nPick',
   'Soon a\nNetflix\nSeries',
   'Costa\nBook\nAward',
-  'Prize-\nwinning\nAuthor'
+  'Prize-\nwinning\nAuthor',
+  'As seen\non\nThis Morning',
+  'Mum\'s\nBook\nClub',
+  'Airport\nW H Smith\n3 for 2',
+  'Now\nHalf\nPrice',
+  'Buy one\nget one\nfree',
+  'Spotted\non the\nTube'
 ];
 
 const authorFirstNames = [
@@ -508,6 +489,16 @@ const subtitles = [
   'Perfect for fans of The Bookseller of Kabul',
   'Perfect for fans of Where the Crawdads Sing',
   'If you loved The Tattooist of Auschwitz, you\'ll love this',
+  'Soon to be a major Netflix limited series',
+  'A love letter to [insert place] and its people',
+  'For readers who loved Eleanor Oliphant',
+  'A triumph — Sunday Times',
+  'Breathtaking — Observer',
+  'The most important book of the year — someone, probably',
+  'I literally could not put it down — someone\'s mum',
+  'One woman. One secret. One really long subtitle.',
+  'Based on an extraordinary true story (loosely)',
+  'The debut everyone is pretending to have read',
 ];
 
 // ── Colour palettes for covers ──────────────────────────────────
@@ -671,19 +662,6 @@ function share() {
   }
 }
 
-// ── Render pattern cards ────────────────────────────────────────
-
-function renderPatterns() {
-  const grid = document.getElementById('pattern-grid');
-  grid.innerHTML = patterns.map(p => `
-    <div class="pattern-card">
-      <h3>${p.name}</h3>
-      <div class="formula">${p.formula}</div>
-      <div class="real-books">${p.realBooks}</div>
-    </div>
-  `).join('');
-}
-
 // ── Init ────────────────────────────────────────────────────────
 
 document.getElementById('btn-generate').addEventListener('click', generate);
@@ -696,8 +674,6 @@ document.addEventListener('keydown', (e) => {
     generate();
   }
 });
-
-renderPatterns();
 </script>
 
 </body>
