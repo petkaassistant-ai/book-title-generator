@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Bestseller Title Generator</title>
+  <meta name="description" content="Generate your next bestselling novel title using proven literary formulas. A tongue-in-cheek tool for the publishing industry.">
+  <meta property="og:title" content="The Bestseller Title Generator">
+  <meta property="og:description" content="Why write a good book when you can just have a good title?">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf7f2;
+      --card: #fff;
+      --text: #1a1a1a;
+      --muted: #6b6b6b;
+      --accent: #8b2252;
+      --accent-light: #f3e8ee;
+      --gold: #c4962c;
+      --border: #e8e4de;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 1.5rem 1rem;
+      max-width: 600px;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2.4rem;
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      color: var(--accent);
+    }
+
+    header p {
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .generator {
+      width: 100%;
+      max-width: 480px;
+      padding: 0 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .book-cover {
+      background: linear-gradient(135deg, #2c1810 0%, #4a2028 40%, #1a0a14 100%);
+      border-radius: 4px;
+      padding: 3rem 2.5rem;
+      min-height: 340px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      box-shadow:
+        6px 6px 0 rgba(0,0,0,0.15),
+        0 20px 60px rgba(0,0,0,0.2);
+      cursor: default;
+      transition: transform 0.3s ease;
+      overflow: hidden;
+    }
+
+    .book-cover::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 20px;
+      background: linear-gradient(90deg, rgba(0,0,0,0.3), transparent);
+    }
+
+    .book-cover::after {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(196, 150, 44, 0.3);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    .book-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #f5f0e8;
+      line-height: 1.25;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      max-width: 90%;
+      transition: opacity 0.3s ease;
+    }
+
+    .book-author {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.9;
+    }
+
+    .book-subtitle {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.85rem;
+      font-style: italic;
+      color: rgba(245, 240, 232, 0.6);
+      margin-top: 1rem;
+    }
+
+    .sticker {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(12deg);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .sticker span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #1a0a14;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .formula-tag {
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      font-style: italic;
+      min-height: 1.4em;
+    }
+
+    .formula-tag strong {
+      color: var(--accent);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.75rem;
+      justify-content: center;
+    }
+
+    .btn-generate {
+      padding: 0.9rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-generate:hover {
+      background: #a02a65;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(139, 34, 82, 0.3);
+    }
+
+    .btn-generate:active {
+      transform: translateY(0);
+    }
+
+    .btn-share {
+      padding: 0.9rem 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--card);
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .btn-share:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .examples {
+      max-width: 600px;
+      padding: 0 1.5rem;
+      margin-top: 3.5rem;
+    }
+
+    .examples h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.3rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .pattern-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    .pattern-card h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.95rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .pattern-card .formula {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+
+    .pattern-card .real-books {
+      font-size: 0.78rem;
+      color: #999;
+      line-height: 1.5;
+    }
+
+    .counter {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .counter strong {
+      color: var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 1.5rem 2rem;
+      margin-top: auto;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--text);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @keyframes fadeTitle {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .title-animate {
+      animation: fadeTitle 0.4s ease forwards;
+    }
+
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.8rem; }
+      .book-cover { padding: 2.5rem 1.75rem; min-height: 280px; }
+      .book-title { font-size: 1.5rem; }
+      .controls { flex-direction: column; }
+      .btn-generate, .btn-share { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>The Bestseller Title Generator</h1>
+    <p>Why write a good book when you can just have a good title?</p>
+  </header>
+
+  <div class="generator">
+    <div class="book-cover" id="book-cover">
+      <div class="sticker"><span>Sunday<br>Times<br>#1</span></div>
+      <div class="book-title" id="book-title">Click Generate to discover your bestseller</div>
+      <div class="book-author" id="book-author"></div>
+      <div class="book-subtitle" id="book-subtitle"></div>
+    </div>
+    <div class="formula-tag" id="formula-tag"></div>
+    <div class="controls">
+      <button class="btn-generate" id="btn-generate">Generate Bestseller</button>
+      <button class="btn-share" id="btn-share" title="Copy to clipboard">Share</button>
+    </div>
+    <div class="counter" id="counter"></div>
+  </div>
+
+  <div class="examples">
+    <h2>The Proven Formulas</h2>
+    <div class="pattern-grid" id="pattern-grid"></div>
+  </div>
+
+  <footer>
+    <p>A silly project by <a href="https://chalkstream.digital" target="_blank">Chalkstream Digital</a></p>
+    <p style="margin-top:0.5rem; font-size:0.75rem;">No actual publishing deals were harmed in the making of this website.</p>
+  </footer>
+
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+// ── Word lists ──────────────────────────────────────────────────
+
+const jobs = [
+  'Bookseller', 'Tattooist', 'Librarian', 'Apothecary', 'Cartographer',
+  'Clockmaker', 'Perfumer', 'Astronomer', 'Toymaker', 'Calligrapher',
+  'Glassblower', 'Herbalist', 'Weaver', 'Gondolier', 'Lighthouse Keeper',
+  'Beekeeper', 'Stonemason', 'Falconer', 'Vintner', 'Puppeteer',
+  'Blacksmith', 'Lamplighter', 'Ferryman', 'Milliner', 'Antiquarian',
+  'Archaeologist', 'Silversmith', 'Watchmaker', 'Saddler', 'Cooper',
+  'Chandler', 'Midwife', 'Undertaker', 'Cobbler', 'Tanner'
+];
+
+const exoticPlaces = [
+  'Kabul', 'Florence', 'Marrakech', 'Constantinople', 'Zanzibar',
+  'Aleppo', 'Samarkand', 'Bruges', 'Timbuktu', 'Dubrovnik',
+  'Tangier', 'Jaipur', 'Havana', 'Thessaloniki', 'Reykjavik',
+  'Trieste', 'Valparaiso', 'Isfahan', 'Fez', 'Kyoto',
+  'Lisbon', 'Seville', 'Gdansk', 'Palermo', 'Bergen',
+  'Sarajevo', 'Oporto', 'Tallinn', 'Split', 'Lhasa'
+];
+
+const persons = [
+  'Girl', 'Boy', 'Woman', 'Man', 'Wife', 'Daughter', 'Child',
+  'Widow', 'Orphan', 'Stranger', 'Husband', 'Sister', 'Brother'
+];
+
+const pastVerbs = [
+  'Kicked', 'Ate', 'Stole', 'Burned', 'Buried', 'Swallowed',
+  'Painted', 'Forgot', 'Counted', 'Collected', 'Measured',
+  'Sang to', 'Dreamed of', 'Whispered to', 'Chased', 'Mended',
+  'Smuggled', 'Mapped', 'Tasted', 'Sheltered', 'Catalogued',
+  'Bottled', 'Hoarded', 'Untangled', 'Stitched', 'Decoded'
+];
+
+const objects = [
+  'Stars', 'Bees', 'Wolves', 'Shadows', 'Nightingales',
+  'Storms', 'Thorns', 'Bones', 'Embers', 'Orchids',
+  'Foxes', 'Serpents', 'Moths', 'Thistles', 'Ravens',
+  'Pearls', 'Ashes', 'Feathers', 'Stones', 'Riddles',
+  'Clocks', 'Letters', 'Keys', 'Lanterns', 'Compasses'
+];
+
+const adjectives = [
+  'Secret', 'Lost', 'Last', 'Silent', 'Invisible',
+  'Forgotten', 'Vanishing', 'Midnight', 'Golden', 'Hidden',
+  'Seventh', 'Distant', 'Wicked', 'Amber', 'Crimson',
+  'Silver', 'Emerald', 'Frozen', 'Burning', 'Moonlit',
+  'Broken', 'Stolen', 'Sleeping', 'Glass', 'Paper',
+  'Velvet', 'Hollow', 'Starless', 'Bitter', 'Wild'
+];
+
+const abstractNouns = [
+  'Light', 'Darkness', 'Silence', 'Time', 'Bone',
+  'Fire', 'Mist', 'Dust', 'Wind', 'Rain',
+  'Salt', 'Smoke', 'Iron', 'Silk', 'Frost',
+  'Honey', 'Ash', 'Blood', 'Snow', 'Thunder',
+  'Glass', 'Stone', 'Thorn', 'Gold', 'Silver'
+];
+
+const abstractNouns2 = [
+  'Roses', 'Dreams', 'Whispers', 'Ashes', 'Thorns',
+  'Flames', 'Feathers', 'Shadows', 'Stars', 'Storms',
+  'Daggers', 'Embers', 'Secrets', 'Wishes', 'Nightmares',
+  'Serpents', 'Ruins', 'Crowns', 'Ravens', 'Blossoms',
+  'Wolves', 'Bones', 'Ghosts', 'Echoes', 'Sparrows'
+];
+
+const firstNames = [
+  'Evelyn', 'Adelaide', 'Marguerite', 'Beatrice', 'Cordelia',
+  'Josephine', 'Genevieve', 'Theodora', 'Arabella', 'Clementine',
+  'Octavia', 'Vivienne', 'Rosalind', 'Leonora', 'Cecily',
+  'Isobel', 'Helena', 'Constance', 'Penelope', 'Matilda',
+  'Benedict', 'Leopold', 'Augustus', 'Percival', 'Bartholomew'
+];
+
+const numbers = ['Two', 'Three', 'Five', 'Seven', 'Nine', 'Eleven', 'Thirteen', 'Hundred', 'Thousand'];
+
+const pluralNouns = [
+  'Husbands', 'Lives', 'Deaths', 'Secrets', 'Letters',
+  'Winters', 'Summers', 'Sins', 'Lies', 'Daughters',
+  'Sorrows', 'Songs', 'Silences', 'Faces', 'Names',
+  'Doors', 'Rooms', 'Gardens', 'Bridges', 'Mirrors'
+];
+
+const locations = [
+  'the Forest', 'the Mountain', 'the Sea', 'the River', 'the Desert',
+  'the Attic', 'the Garden', 'the Cellar', 'the Tower', 'the Bridge',
+  'the Lake', 'the Orchard', 'the Marshes', 'the Ruins', 'the Chapel',
+  'the Harbour', 'the Moor', 'the Cliff', 'the Lighthouse', 'the Abbey'
+];
+
+const stickers = [
+  'Sunday\nTimes\n#1',
+  'New York\nTimes\nBestseller',
+  'Richard\n& Judy\nBook Club',
+  'Now a\nMajor\nFilm',
+  'BBC\nBig\nRead',
+  'Book of\nthe Year',
+  'Reese\'s\nBook\nClub',
+  'Oprah\'s\nBook\nClub',
+  'Winner\nBooker\nPrize',
+  '10\nMillion\nCopies',
+  'Water-\nstones\nPick',
+  'Soon a\nNetflix\nSeries',
+  'Costa\nBook\nAward',
+  'Prize-\nwinning\nAuthor'
+];
+
+const authorFirstNames = [
+  'Elena', 'Victoria', 'Sarah', 'Kate', 'Hannah',
+  'Margaret', 'Rachel', 'Joanna', 'Clare', 'Anna',
+  'Elizabeth', 'Philippa', 'Lucinda', 'Jojo', 'Sally',
+  'Maggie', 'Diane', 'Kristin', 'Delia', 'Rosamund'
+];
+
+const authorLastNames = [
+  'Blackwood', 'Winterbourne', 'St. Clair', 'Ashworth', 'Hartley',
+  'Thornton', 'Whitmore', 'Pemberton', 'Fairfax', 'Kingswell',
+  'Montague', 'Ravensdale', 'Langford', 'Ashby', 'Hargrave',
+  'Whitfield', 'Sinclair', 'Beaumont', 'Cavendish', 'Ashford'
+];
+
+const subtitles = [
+  'A Novel',
+  'A Novel',
+  'A Novel',
+  '',
+  '',
+  '',
+  'An unforgettable story of love, loss and redemption',
+  'A sweeping tale of family, secrets and belonging',
+  'The spellbinding new novel from the bestselling author',
+  'A heartrending story you will never forget',
+  'The book everyone is talking about',
+  'Perfect for fans of The Bookseller of Kabul',
+  'Perfect for fans of Where the Crawdads Sing',
+  'If you loved The Tattooist of Auschwitz, you\'ll love this',
+];
+
+// ── Colour palettes for covers ──────────────────────────────────
+
+const coverPalettes = [
+  ['#2c1810', '#4a2028', '#1a0a14'],  // dark burgundy
+  ['#0a1628', '#1a2a4a', '#0a0f1e'],  // midnight blue
+  ['#1a2e1a', '#2a4a28', '#0a1a0a'],  // forest green
+  ['#2a1a30', '#4a2850', '#1a0a20'],  // deep purple
+  ['#28180a', '#4a3018', '#1a0f05'],  // rich brown
+  ['#1a1a2e', '#2a2a4a', '#0f0f1e'],  // slate
+  ['#2e1a1a', '#4a2828', '#1e0f0f'],  // deep red
+  ['#0a2828', '#1a4a4a', '#051a1a'],  // teal
+  ['#2e2a1a', '#4a4428', '#1e1a0a'],  // olive gold
+  ['#1a0a28', '#30184a', '#0f051a'],  // royal purple
+];
+
+// ── Patterns ────────────────────────────────────────────────────
+
+const patterns = [
+  {
+    name: 'The Job Description',
+    formula: 'The [Job] of [Exotic Place]',
+    realBooks: 'The Bookseller of Kabul, The Tattooist of Auschwitz, The Perfumer of Florence',
+    generate: () => `The ${pick(jobs)} of ${pick(exoticPlaces)}`
+  },
+  {
+    name: 'The Verb Girl',
+    formula: 'The [Person] Who [Verb] [Noun]',
+    realBooks: 'The Girl Who Kicked the Hornet\'s Nest, The Girl on the Train, The Boy Who Followed His Father',
+    generate: () => `The ${pick(persons)} Who ${pick(pastVerbs)} the ${pick(objects)}`
+  },
+  {
+    name: 'The Possessive',
+    formula: 'The [Job]\'s [Noun]',
+    realBooks: 'The Time Traveler\'s Wife, The Zookeeper\'s Wife, The Beekeeper\'s Promise',
+    generate: () => `The ${pick(jobs)}'s ${pick(persons) === 'Wife' ? 'Wife' : pick([...objects.map(o => o), 'Wife', 'Daughter', 'Secret', 'Promise', 'Lament', 'Gift', 'Confession', 'Tale', 'Apprentice'])}`
+  },
+  {
+    name: 'A Noun of Nouns',
+    formula: 'A [Noun] of [Noun] and [Noun]',
+    realBooks: 'A Court of Thorns and Roses, A Discovery of Witches, A Gentleman in Moscow',
+    generate: () => {
+      let n1 = pick(abstractNouns);
+      let n2, n3;
+      do { n2 = pick(abstractNouns2); } while (n2 === n1);
+      do { n3 = pick(abstractNouns2); } while (n3 === n2 || n3 === n1);
+      return `A ${pick(['Court', 'Garden', 'House', 'Kingdom', 'Library', 'Palace', 'Archive', 'Chronicle', 'Map', 'Cabinet', 'Theatre', 'Catalogue'])} of ${n2} and ${n3}`;
+    }
+  },
+  {
+    name: 'The Numbered',
+    formula: 'The [Number] [Noun] of [Name]',
+    realBooks: 'The Seven Husbands of Evelyn Hugo, The Seven Deaths of Evelyn Hardcastle, The Three-Body Problem',
+    generate: () => `The ${pick(numbers)} ${pick(pluralNouns)} of ${pick(firstNames)} ${pick(authorLastNames)}`
+  },
+  {
+    name: 'The Last Thing',
+    formula: 'The Last [Noun] in/on/from [Place]',
+    realBooks: 'The Last Letter from Your Lover, The Last House on Needless Street, The Last Days of Rabbit Hayes',
+    generate: () => `The Last ${pick(['Letter', 'House', 'Light', 'Song', 'Train', 'Rose', 'Boat', 'Bridge', 'Summer', 'Dance', 'Garden', 'Candle'])} ${pick(['from', 'in', 'on', 'before', 'beyond'])} ${pick(locations)}`
+  },
+  {
+    name: 'Where the What',
+    formula: 'Where the [Noun] [Verb]',
+    realBooks: 'Where the Crawdads Sing, Where the Wild Things Are, Where the Forest Meets the Stars',
+    generate: () => `Where the ${pick(objects)} ${pick(['Sing', 'Sleep', 'Burn', 'Dance', 'Whisper', 'Bloom', 'Fall', 'Wait', 'Gather', 'Break', 'Hide', 'Dream', 'Vanish', 'Return'])}`
+  },
+  {
+    name: 'All the Things',
+    formula: 'All the [Adjective] [Noun]',
+    realBooks: 'All the Light We Cannot See, All the Bright Places, All the Missing Girls',
+    generate: () => `All the ${pick(adjectives)} ${pick([...objects, 'Places', 'Things', 'Words', 'Names', 'Days', 'Nights', 'Lives', 'Ways', 'Lies', 'Truths'])}`
+  },
+  {
+    name: 'The Adjective Noun',
+    formula: 'The [Adjective] [Noun]',
+    realBooks: 'The Silent Patient, The Midnight Library, The Invisible Life of Addie LaRue',
+    generate: () => `The ${pick(adjectives)} ${pick(['Library', 'Patient', 'Garden', 'Architect', 'Orchard', 'Mapmaker', 'Daughter', 'Historian', 'Apothecary', 'Foundling', 'Navigator', 'Alchemist', 'Sanctuary', 'Chronicle'])}`
+  },
+  {
+    name: 'The Life Of',
+    formula: 'The [Adjective] Life of [Name]',
+    realBooks: 'The Secret Life of Bees, The Immortal Life of Henrietta Lacks, The Invisible Life of Addie LaRue',
+    generate: () => `The ${pick(['Secret', 'Invisible', 'Extraordinary', 'Remarkable', 'Impossible', 'Curious', 'Unexpected', 'Improbable'])} Life of ${pick(firstNames)} ${pick(authorLastNames)}`
+  }
+];
+
+// ── Helpers ──────────────────────────────────────────────────────
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+let generatedCount = 0;
+let lastTitle = '';
+
+function generate() {
+  const pattern = pick(patterns);
+  let title;
+  // Avoid repeating the same title
+  do {
+    title = pattern.generate();
+  } while (title === lastTitle);
+  lastTitle = title;
+
+  const titleEl = document.getElementById('book-title');
+  const authorEl = document.getElementById('book-author');
+  const subtitleEl = document.getElementById('book-subtitle');
+  const formulaEl = document.getElementById('formula-tag');
+  const coverEl = document.getElementById('book-cover');
+  const stickerEl = coverEl.querySelector('.sticker span');
+
+  // Animate
+  titleEl.classList.remove('title-animate');
+  void titleEl.offsetWidth;
+  titleEl.classList.add('title-animate');
+
+  // Set content
+  titleEl.textContent = title;
+  authorEl.textContent = `${pick(authorFirstNames)} ${pick(authorLastNames)}`;
+  subtitleEl.textContent = pick(subtitles);
+  formulaEl.innerHTML = `Formula: <strong>${pattern.name}</strong> &mdash; ${pattern.formula}`;
+
+  // Random cover colour
+  const palette = pick(coverPalettes);
+  coverEl.style.background = `linear-gradient(135deg, ${palette[0]} 0%, ${palette[1]} 40%, ${palette[2]} 100%)`;
+
+  // Random sticker
+  stickerEl.innerHTML = pick(stickers).replace(/\n/g, '<br>');
+
+  // Counter
+  generatedCount++;
+  const counterEl = document.getElementById('counter');
+  if (generatedCount === 1) {
+    counterEl.textContent = 'Your first potential bestseller!';
+  } else {
+    counterEl.innerHTML = `<strong>${generatedCount}</strong> titles generated. Surely one of them is a bestseller.`;
+  }
+}
+
+function share() {
+  const title = document.getElementById('book-title').textContent;
+  const author = document.getElementById('book-author').textContent;
+  if (!title || title === 'Click Generate to discover your bestseller') {
+    generate();
+    return;
+  }
+
+  const text = `My next bestseller: "${title}" by ${author}\n\nGenerated at`;
+  const url = window.location.href;
+
+  if (navigator.share) {
+    navigator.share({ title: 'The Bestseller Title Generator', text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(`${text} ${url}`).then(() => {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    });
+  }
+}
+
+// ── Render pattern cards ────────────────────────────────────────
+
+function renderPatterns() {
+  const grid = document.getElementById('pattern-grid');
+  grid.innerHTML = patterns.map(p => `
+    <div class="pattern-card">
+      <h3>${p.name}</h3>
+      <div class="formula">${p.formula}</div>
+      <div class="real-books">${p.realBooks}</div>
+    </div>
+  `).join('');
+}
+
+// ── Init ────────────────────────────────────────────────────────
+
+document.getElementById('btn-generate').addEventListener('click', generate);
+document.getElementById('btn-share').addEventListener('click', share);
+
+// Keyboard shortcut
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && e.target === document.body) {
+    e.preventDefault();
+    generate();
+  }
+});
+
+renderPatterns();
+</script>
+
+</body>
+</html>
