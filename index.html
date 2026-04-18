@@ -157,25 +157,82 @@
       line-height: 1.2;
     }
 
-    .formula-tag {
-      margin-top: 1.25rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-align: center;
-      font-style: italic;
-      min-height: 1.4em;
+    .slider-container {
+      margin-top: 1.75rem;
+      padding: 1rem 0;
     }
 
-    .formula-tag strong {
-      color: var(--accent);
-      font-style: normal;
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
       font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .slider-labels .label-left {
+      color: var(--accent);
+    }
+
+    .slider-labels .label-right {
+      color: var(--gold);
+    }
+
+    .slider-track {
+      position: relative;
+      width: 100%;
+      height: 32px;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--card);
+      border: 3px solid var(--accent);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--card);
+      border: 3px solid var(--accent);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      cursor: pointer;
+    }
+
+    .slider-mode {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      font-style: italic;
+      min-height: 1.2em;
     }
 
     .controls {
       display: flex;
       gap: 0.75rem;
-      margin-top: 1.75rem;
+      margin-top: 1.25rem;
       justify-content: center;
     }
 
@@ -303,7 +360,18 @@
       <div class="book-author" id="book-author"></div>
       <div class="book-subtitle" id="book-subtitle"></div>
     </div>
-    <div class="formula-tag" id="formula-tag" style="display:none;"></div>
+
+    <div class="slider-container">
+      <div class="slider-labels">
+        <span class="label-left">Booker Prize</span>
+        <span class="label-right">Bargain Bin</span>
+      </div>
+      <div class="slider-track">
+        <input type="range" id="silliness" min="0" max="100" value="50">
+      </div>
+      <div class="slider-mode" id="slider-mode">Anything could happen</div>
+    </div>
+
     <div class="controls">
       <button class="btn-generate" id="btn-generate">Generate Bestseller</button>
       <button class="btn-share" id="btn-share" title="Copy to clipboard">Share</button>
@@ -319,106 +387,271 @@
   <div class="toast" id="toast">Copied to clipboard!</div>
 
 <script>
-// ── Word lists ──────────────────────────────────────────────────
+// ── Word lists: [serious, silly] pools ──────────────────────────
 
-const jobs = [
-  'Bookseller', 'Tattooist', 'Librarian', 'Apothecary', 'Cartographer',
-  'Clockmaker', 'Perfumer', 'Astronomer', 'Toymaker', 'Calligrapher',
-  'Glassblower', 'Herbalist', 'Weaver', 'Gondolier', 'Lighthouse Keeper',
-  'Beekeeper', 'Stonemason', 'Falconer', 'Vintner', 'Puppeteer',
-  'Blacksmith', 'Lamplighter', 'Ferryman', 'Milliner', 'Antiquarian',
-  'Archaeologist', 'Silversmith', 'Watchmaker', 'Saddler', 'Cooper',
-  'Chandler', 'Midwife', 'Undertaker', 'Cobbler', 'Tanner',
-  'Fishmonger', 'Chimney Sweep', 'Taxidermist', 'Candlestick Maker',
-  'Dog Walker', 'Traffic Warden', 'Plumber', 'Dentist', 'Accountant',
-  'Estate Agent', 'Quantity Surveyor', 'IT Consultant', 'Lollipop Lady',
-  'Sous Chef', 'Wheelwright', 'Cheese Grader', 'Bee Whisperer',
-  'Piano Tuner', 'Hat Blocker', 'Turnip Farmer', 'Oyster Shucker',
-  'Management Consultant', 'Safety Assessor', 'Compliance Officer',
-  'HR Manager', 'Loss Adjuster', 'Parking Inspector', 'Health Visitor',
-  'Systems Analyst', 'Debt Collector', 'Planning Officer', 'Conveyancer',
-  'Ombudsman', 'Actuary', 'Facilities Manager', 'Risk Assessor',
-  'Data Entry Clerk', 'Building Inspector', 'Procurement Officer',
-  'Payroll Administrator', 'Driving Examiner', 'Tax Inspector',
-  'Meter Reader', 'Claims Handler', 'Pension Advisor', 'Scaffolder'
-];
-
-const exoticPlaces = [
-  'Kabul', 'Florence', 'Marrakech', 'Constantinople', 'Zanzibar',
-  'Aleppo', 'Samarkand', 'Bruges', 'Timbuktu', 'Dubrovnik',
-  'Tangier', 'Jaipur', 'Havana', 'Thessaloniki', 'Reykjavik',
-  'Trieste', 'Valparaiso', 'Isfahan', 'Fez', 'Kyoto',
-  'Lisbon', 'Seville', 'Gdansk', 'Palermo', 'Bergen',
-  'Sarajevo', 'Oporto', 'Tallinn', 'Split', 'Lhasa',
-  'Slough', 'Grimsby', 'Basingstoke', 'Croydon', 'Swindon',
-  'Wolverhampton', 'Scunthorpe', 'Milton Keynes', 'Neasden',
-  'Dunstable', 'Bognor Regis', 'Cleethorpes', 'Luton',
-  'Skegness', 'Peterborough', 'Doncaster', 'Hartlepool'
-];
-
-const persons = [
-  'Girl', 'Boy', 'Woman', 'Man', 'Wife', 'Daughter', 'Child',
-  'Widow', 'Orphan', 'Stranger', 'Husband', 'Sister', 'Brother'
-];
-
-const pastVerbs = [
-  'Kicked', 'Ate', 'Stole', 'Burned', 'Buried', 'Swallowed',
-  'Painted', 'Forgot', 'Counted', 'Collected', 'Measured',
-  'Sang to', 'Dreamed of', 'Whispered to', 'Chased', 'Mended',
-  'Smuggled', 'Mapped', 'Tasted', 'Sheltered', 'Catalogued',
-  'Bottled', 'Hoarded', 'Untangled', 'Stitched', 'Decoded',
-  'Microwaved', 'Sat on', 'Licked', 'Ironed', 'Alphabetised',
-  'Sniffed', 'Polished', 'Laundered', 'Composted', 'Laminated',
-  'Stapled', 'Defrosted', 'Vacuum-Packed', 'Knitted', 'Marinaded',
-  'Photobombed', 'Befriended', 'Outlived', 'Misplaced', 'Rehomed'
-];
-
-const objects = [
-  'Stars', 'Bees', 'Wolves', 'Shadows', 'Nightingales',
-  'Storms', 'Thorns', 'Bones', 'Embers', 'Orchids',
-  'Foxes', 'Serpents', 'Moths', 'Thistles', 'Ravens',
-  'Pearls', 'Ashes', 'Feathers', 'Stones', 'Riddles',
-  'Clocks', 'Letters', 'Keys', 'Lanterns', 'Compasses',
-  'Turnips', 'Pigeons', 'Curtains', 'Sausages', 'Receipts',
-  'Radiators', 'Cushions', 'Spatulas', 'Sandwiches', 'Batteries',
-  'Wasps', 'Lawnmowers', 'Toasters', 'Slippers', 'Chutneys',
-  'Yoghurts', 'Flagstones', 'Crumpets', 'Budgies', 'Courgettes',
-  'Doilies', 'Corkscrews', 'Oven Gloves', 'Dustpans', 'Peelers',
-  'Colanders', 'Tupperware Lids', 'Egg Cups', 'Tea Towels', 'Tongs',
-  'Whisks', 'Coasters', 'Bin Bags', 'Napkin Rings', 'Sponges',
-  'Cable Ties', 'Draught Excluders', 'Doorstops', 'Coat Hangers',
-  'Plug Adapters', 'Shoe Horns', 'Lint Rollers', 'Rubber Gloves'
-];
-
-const adjectives = [
-  'Secret', 'Lost', 'Last', 'Silent', 'Invisible',
-  'Forgotten', 'Vanishing', 'Midnight', 'Golden', 'Hidden',
-  'Seventh', 'Distant', 'Wicked', 'Amber', 'Crimson',
-  'Silver', 'Emerald', 'Frozen', 'Burning', 'Moonlit',
-  'Broken', 'Stolen', 'Sleeping', 'Glass', 'Paper',
-  'Velvet', 'Hollow', 'Starless', 'Bitter', 'Wild',
-  'Damp', 'Slightly Stale', 'Lukewarm', 'Beige', 'Mildly Inconvenient',
-  'Oddly Specific', 'Unnecessary', 'Reluctant', 'Suspicious', 'Unfortunate',
-  'Tepid', 'Adequate', 'Unremarkable', 'Soggy', 'Vaguely Threatening'
-];
-
-const abstractNouns = [
-  'Light', 'Darkness', 'Silence', 'Time', 'Bone',
-  'Fire', 'Mist', 'Dust', 'Wind', 'Rain',
-  'Salt', 'Smoke', 'Iron', 'Silk', 'Frost',
-  'Honey', 'Ash', 'Blood', 'Snow', 'Thunder',
-  'Glass', 'Stone', 'Thorn', 'Gold', 'Silver'
-];
-
-const abstractNouns2 = [
-  'Roses', 'Dreams', 'Whispers', 'Ashes', 'Thorns',
-  'Flames', 'Feathers', 'Shadows', 'Stars', 'Storms',
-  'Daggers', 'Embers', 'Secrets', 'Wishes', 'Nightmares',
-  'Serpents', 'Ruins', 'Crowns', 'Ravens', 'Blossoms',
-  'Wolves', 'Bones', 'Ghosts', 'Echoes', 'Sparrows',
-  'Sandwiches', 'Receipts', 'Tupperware', 'Grudges', 'Cardigans',
-  'Spreadsheets', 'Parking Tickets', 'Crumbs', 'Ringtones', 'Biscuits'
-];
+const W = {
+  jobs: {
+    serious: [
+      'Bookseller', 'Tattooist', 'Librarian', 'Apothecary', 'Cartographer',
+      'Clockmaker', 'Perfumer', 'Astronomer', 'Toymaker', 'Calligrapher',
+      'Glassblower', 'Herbalist', 'Weaver', 'Gondolier', 'Lighthouse Keeper',
+      'Beekeeper', 'Stonemason', 'Falconer', 'Vintner', 'Puppeteer',
+      'Blacksmith', 'Lamplighter', 'Ferryman', 'Milliner', 'Antiquarian',
+      'Archaeologist', 'Silversmith', 'Watchmaker', 'Saddler', 'Cooper',
+      'Chandler', 'Midwife', 'Undertaker', 'Cobbler', 'Tanner'
+    ],
+    silly: [
+      'Fishmonger', 'Chimney Sweep', 'Taxidermist', 'Candlestick Maker',
+      'Dog Walker', 'Traffic Warden', 'Plumber', 'Dentist', 'Accountant',
+      'Estate Agent', 'Quantity Surveyor', 'IT Consultant', 'Lollipop Lady',
+      'Sous Chef', 'Wheelwright', 'Cheese Grader', 'Bee Whisperer',
+      'Piano Tuner', 'Hat Blocker', 'Turnip Farmer', 'Oyster Shucker',
+      'Management Consultant', 'Safety Assessor', 'Compliance Officer',
+      'HR Manager', 'Loss Adjuster', 'Parking Inspector', 'Health Visitor',
+      'Systems Analyst', 'Debt Collector', 'Planning Officer', 'Conveyancer',
+      'Ombudsman', 'Actuary', 'Facilities Manager', 'Risk Assessor',
+      'Data Entry Clerk', 'Building Inspector', 'Procurement Officer',
+      'Payroll Administrator', 'Driving Examiner', 'Tax Inspector',
+      'Meter Reader', 'Claims Handler', 'Pension Advisor', 'Scaffolder'
+    ]
+  },
+  places: {
+    serious: [
+      'Kabul', 'Florence', 'Marrakech', 'Constantinople', 'Zanzibar',
+      'Aleppo', 'Samarkand', 'Bruges', 'Timbuktu', 'Dubrovnik',
+      'Tangier', 'Jaipur', 'Havana', 'Thessaloniki', 'Reykjavik',
+      'Trieste', 'Valparaiso', 'Isfahan', 'Fez', 'Kyoto',
+      'Lisbon', 'Seville', 'Gdansk', 'Palermo', 'Bergen',
+      'Sarajevo', 'Oporto', 'Tallinn', 'Split', 'Lhasa'
+    ],
+    silly: [
+      'Slough', 'Grimsby', 'Basingstoke', 'Croydon', 'Swindon',
+      'Wolverhampton', 'Scunthorpe', 'Milton Keynes', 'Neasden',
+      'Dunstable', 'Bognor Regis', 'Cleethorpes', 'Luton',
+      'Skegness', 'Peterborough', 'Doncaster', 'Hartlepool'
+    ]
+  },
+  persons: {
+    serious: [
+      'Girl', 'Boy', 'Woman', 'Man', 'Wife', 'Daughter', 'Child',
+      'Widow', 'Orphan', 'Stranger', 'Husband', 'Sister', 'Brother'
+    ],
+    silly: []
+  },
+  verbs: {
+    serious: [
+      'Kicked', 'Ate', 'Stole', 'Burned', 'Buried', 'Swallowed',
+      'Painted', 'Forgot', 'Counted', 'Collected', 'Measured',
+      'Sang to', 'Dreamed of', 'Whispered to', 'Chased', 'Mended',
+      'Smuggled', 'Mapped', 'Tasted', 'Sheltered', 'Catalogued',
+      'Bottled', 'Hoarded', 'Untangled', 'Stitched', 'Decoded'
+    ],
+    silly: [
+      'Microwaved', 'Sat on', 'Licked', 'Ironed', 'Alphabetised',
+      'Sniffed', 'Polished', 'Laundered', 'Composted', 'Laminated',
+      'Stapled', 'Defrosted', 'Vacuum-Packed', 'Knitted', 'Marinaded',
+      'Photobombed', 'Befriended', 'Outlived', 'Misplaced', 'Rehomed'
+    ]
+  },
+  objects: {
+    serious: [
+      'Stars', 'Bees', 'Wolves', 'Shadows', 'Nightingales',
+      'Storms', 'Thorns', 'Bones', 'Embers', 'Orchids',
+      'Foxes', 'Serpents', 'Moths', 'Thistles', 'Ravens',
+      'Pearls', 'Ashes', 'Feathers', 'Stones', 'Riddles',
+      'Clocks', 'Letters', 'Keys', 'Lanterns', 'Compasses'
+    ],
+    silly: [
+      'Turnips', 'Pigeons', 'Curtains', 'Sausages', 'Receipts',
+      'Radiators', 'Cushions', 'Spatulas', 'Sandwiches', 'Batteries',
+      'Wasps', 'Lawnmowers', 'Toasters', 'Slippers', 'Chutneys',
+      'Yoghurts', 'Flagstones', 'Crumpets', 'Budgies', 'Courgettes',
+      'Doilies', 'Corkscrews', 'Oven Gloves', 'Dustpans', 'Peelers',
+      'Colanders', 'Tupperware Lids', 'Egg Cups', 'Tea Towels', 'Tongs',
+      'Whisks', 'Coasters', 'Bin Bags', 'Napkin Rings', 'Sponges',
+      'Cable Ties', 'Draught Excluders', 'Doorstops', 'Coat Hangers',
+      'Plug Adapters', 'Shoe Horns', 'Lint Rollers', 'Rubber Gloves'
+    ]
+  },
+  adjectives: {
+    serious: [
+      'Secret', 'Lost', 'Last', 'Silent', 'Invisible',
+      'Forgotten', 'Vanishing', 'Midnight', 'Golden', 'Hidden',
+      'Seventh', 'Distant', 'Wicked', 'Amber', 'Crimson',
+      'Silver', 'Emerald', 'Frozen', 'Burning', 'Moonlit',
+      'Broken', 'Stolen', 'Sleeping', 'Glass', 'Paper',
+      'Velvet', 'Hollow', 'Starless', 'Bitter', 'Wild'
+    ],
+    silly: [
+      'Damp', 'Slightly Stale', 'Lukewarm', 'Beige', 'Mildly Inconvenient',
+      'Oddly Specific', 'Unnecessary', 'Reluctant', 'Suspicious', 'Unfortunate',
+      'Tepid', 'Adequate', 'Unremarkable', 'Soggy', 'Vaguely Threatening'
+    ]
+  },
+  abstractNouns2: {
+    serious: [
+      'Roses', 'Dreams', 'Whispers', 'Ashes', 'Thorns',
+      'Flames', 'Feathers', 'Shadows', 'Stars', 'Storms',
+      'Daggers', 'Embers', 'Secrets', 'Wishes', 'Nightmares',
+      'Serpents', 'Ruins', 'Crowns', 'Ravens', 'Blossoms',
+      'Wolves', 'Bones', 'Ghosts', 'Echoes', 'Sparrows'
+    ],
+    silly: [
+      'Sandwiches', 'Receipts', 'Tupperware', 'Grudges', 'Cardigans',
+      'Spreadsheets', 'Parking Tickets', 'Crumbs', 'Ringtones', 'Biscuits'
+    ]
+  },
+  pluralNouns: {
+    serious: [
+      'Husbands', 'Lives', 'Deaths', 'Secrets', 'Letters',
+      'Winters', 'Summers', 'Sins', 'Lies', 'Daughters',
+      'Sorrows', 'Songs', 'Silences', 'Faces', 'Names',
+      'Doors', 'Rooms', 'Gardens', 'Bridges', 'Mirrors'
+    ],
+    silly: [
+      'Cats', 'Breakfasts', 'Caravan Holidays', 'Parking Spaces',
+      'Regrets', 'Sandals', 'Sheds', 'Allergies', 'Toothbrushes'
+    ]
+  },
+  locations: {
+    serious: [
+      'the Forest', 'the Mountain', 'the Sea', 'the River', 'the Desert',
+      'the Attic', 'the Garden', 'the Cellar', 'the Tower', 'the Bridge',
+      'the Lake', 'the Orchard', 'the Marshes', 'the Ruins', 'the Chapel',
+      'the Harbour', 'the Moor', 'the Cliff', 'the Lighthouse', 'the Abbey'
+    ],
+    silly: [
+      'the Roundabout', 'the Car Park', 'the Utility Room', 'the Queue',
+      'the Soft Play', 'the Skip', 'the Shed', 'the Bypass', 'the Cul-de-Sac',
+      'the Retail Park', 'the Layby', 'the Self-Checkout'
+    ]
+  },
+  venues: {
+    serious: [
+      'Court', 'Garden', 'House', 'Kingdom', 'Library',
+      'Palace', 'Archive', 'Chronicle', 'Map', 'Cabinet', 'Theatre', 'Catalogue'
+    ],
+    silly: [
+      'Aisle', 'Queue', 'Car Boot Sale', 'Carvery', 'Portakabin',
+      'Waiting Room', 'Leisure Centre', 'Storage Unit'
+    ]
+  },
+  lastNouns: {
+    serious: [
+      'Letter', 'House', 'Light', 'Song', 'Train', 'Rose',
+      'Boat', 'Bridge', 'Summer', 'Dance', 'Garden', 'Candle'
+    ],
+    silly: [
+      'Biscuit', 'Parking Space', 'Microwave', 'Roundabout',
+      'Shed', 'Bin Day', 'Flapjack', 'Tollbooth'
+    ]
+  },
+  lifeAdj: {
+    serious: [
+      'Secret', 'Invisible', 'Extraordinary', 'Remarkable',
+      'Impossible', 'Curious', 'Unexpected', 'Improbable'
+    ],
+    silly: [
+      'Unremarkable', 'Quite Boring', 'Mildly Interesting',
+      'Mostly Adequate', 'Surprisingly Dull', 'Perfectly Average'
+    ]
+  },
+  whereVerbs: {
+    serious: [
+      'Sing', 'Sleep', 'Burn', 'Dance', 'Whisper',
+      'Bloom', 'Fall', 'Wait', 'Gather', 'Break', 'Hide', 'Dream', 'Vanish', 'Return'
+    ],
+    silly: [
+      'Fester', 'Accumulate', 'Congeal', 'Ferment', 'Loiter',
+      'Expire', 'Deflate', 'Curdle', 'Clump', 'Wobble'
+    ]
+  },
+  possessiveNouns: {
+    serious: [
+      'Wife', 'Daughter', 'Secret', 'Promise', 'Lament',
+      'Gift', 'Confession', 'Tale', 'Apprentice'
+    ],
+    silly: [
+      'Invoice', 'Lunchbox', 'Parking Permit', 'Spreadsheet',
+      'Chiropodist', 'Timeshare', 'Grievance', 'Shed Key'
+    ]
+  },
+  singleNouns: {
+    serious: [
+      'Library', 'Patient', 'Garden', 'Architect', 'Orchard',
+      'Mapmaker', 'Daughter', 'Historian', 'Apothecary', 'Foundling',
+      'Navigator', 'Alchemist', 'Sanctuary', 'Chronicle'
+    ],
+    silly: [
+      'Accountant', 'Shed', 'Roundabout', 'Dishwasher',
+      'Cul-de-Sac', 'Lawnmower', 'Pension', 'Thermostat'
+    ]
+  },
+  stickers: {
+    serious: [
+      'Sunday\nTimes\n#1',
+      'New York\nTimes\nBestseller',
+      'Richard\n& Judy\nBook Club',
+      'Now a\nMajor\nFilm',
+      'BBC\nBig\nRead',
+      'Book of\nthe Year',
+      'Reese\'s\nBook\nClub',
+      'Oprah\'s\nBook\nClub',
+      'Winner\nBooker\nPrize',
+      '10\nMillion\nCopies',
+      'Water-\nstones\nPick',
+      'Soon a\nNetflix\nSeries',
+      'Costa\nBook\nAward',
+      'Prize-\nwinning\nAuthor'
+    ],
+    silly: [
+      'As seen\non\nThis Morning',
+      'Mum\'s\nBook\nClub',
+      'Airport\nW H Smith\n3 for 2',
+      'Now\nHalf\nPrice',
+      'Buy one\nget one\nfree',
+      'Spotted\non the\nTube',
+      'Found in\na\ncharity shop',
+      'Left on\na\npark bench',
+      'Reduced\nto\nclear'
+    ]
+  },
+  subtitles: {
+    serious: [
+      'A Novel',
+      'A Novel',
+      'A Novel',
+      '',
+      '',
+      '',
+      'An unforgettable story of love, loss and redemption',
+      'A sweeping tale of family, secrets and belonging',
+      'The spellbinding new novel from the bestselling author',
+      'A heartrending story you will never forget',
+      'The book everyone is talking about',
+      'Perfect for fans of The Bookseller of Kabul',
+      'Perfect for fans of Where the Crawdads Sing',
+      'If you loved The Tattooist of Auschwitz, you\'ll love this',
+      'Soon to be a major Netflix limited series',
+      'A love letter to [insert place] and its people',
+      'For readers who loved Eleanor Oliphant',
+      'A triumph \u2014 Sunday Times',
+      'Breathtaking \u2014 Observer'
+    ],
+    silly: [
+      'The most important book of the year \u2014 someone, probably',
+      'I literally could not put it down \u2014 someone\'s mum',
+      'One woman. One secret. One really long subtitle.',
+      'Based on an extraordinary true story (loosely)',
+      'The debut everyone is pretending to have read',
+      'Makes a lovely gift for someone you don\'t know very well',
+      'Also available in large print',
+      'Now with 20% more subplot',
+      'Contains scenes of mild peril and strong tea',
+      'Not as good as the first one but still quite good'
+    ]
+  }
+};
 
 const firstNames = [
   'Evelyn', 'Adelaide', 'Marguerite', 'Beatrice', 'Cordelia',
@@ -429,48 +662,6 @@ const firstNames = [
 ];
 
 const numbers = ['Two', 'Three', 'Five', 'Seven', 'Nine', 'Eleven', 'Thirteen', 'Hundred', 'Thousand'];
-
-const pluralNouns = [
-  'Husbands', 'Lives', 'Deaths', 'Secrets', 'Letters',
-  'Winters', 'Summers', 'Sins', 'Lies', 'Daughters',
-  'Sorrows', 'Songs', 'Silences', 'Faces', 'Names',
-  'Doors', 'Rooms', 'Gardens', 'Bridges', 'Mirrors',
-  'Cats', 'Breakfasts', 'Caravan Holidays', 'Parking Spaces',
-  'Regrets', 'Sandals', 'Sheds', 'Allergies', 'Toothbrushes'
-];
-
-const locations = [
-  'the Forest', 'the Mountain', 'the Sea', 'the River', 'the Desert',
-  'the Attic', 'the Garden', 'the Cellar', 'the Tower', 'the Bridge',
-  'the Lake', 'the Orchard', 'the Marshes', 'the Ruins', 'the Chapel',
-  'the Harbour', 'the Moor', 'the Cliff', 'the Lighthouse', 'the Abbey',
-  'the Roundabout', 'the Car Park', 'the Utility Room', 'the Queue',
-  'the Soft Play', 'the Skip', 'the Shed', 'the Bypass', 'the Cul-de-Sac',
-  'the Retail Park', 'the Layby', 'the Self-Checkout'
-];
-
-const stickers = [
-  'Sunday\nTimes\n#1',
-  'New York\nTimes\nBestseller',
-  'Richard\n& Judy\nBook Club',
-  'Now a\nMajor\nFilm',
-  'BBC\nBig\nRead',
-  'Book of\nthe Year',
-  'Reese\'s\nBook\nClub',
-  'Oprah\'s\nBook\nClub',
-  'Winner\nBooker\nPrize',
-  '10\nMillion\nCopies',
-  'Water-\nstones\nPick',
-  'Soon a\nNetflix\nSeries',
-  'Costa\nBook\nAward',
-  'Prize-\nwinning\nAuthor',
-  'As seen\non\nThis Morning',
-  'Mum\'s\nBook\nClub',
-  'Airport\nW H Smith\n3 for 2',
-  'Now\nHalf\nPrice',
-  'Buy one\nget one\nfree',
-  'Spotted\non the\nTube'
-];
 
 const authorFirstNames = [
   'Elena', 'Victoria', 'Sarah', 'Kate', 'Hannah',
@@ -486,124 +677,98 @@ const authorLastNames = [
   'Whitfield', 'Sinclair', 'Beaumont', 'Cavendish', 'Ashford'
 ];
 
-const subtitles = [
-  'A Novel',
-  'A Novel',
-  'A Novel',
-  '',
-  '',
-  '',
-  'An unforgettable story of love, loss and redemption',
-  'A sweeping tale of family, secrets and belonging',
-  'The spellbinding new novel from the bestselling author',
-  'A heartrending story you will never forget',
-  'The book everyone is talking about',
-  'Perfect for fans of The Bookseller of Kabul',
-  'Perfect for fans of Where the Crawdads Sing',
-  'If you loved The Tattooist of Auschwitz, you\'ll love this',
-  'Soon to be a major Netflix limited series',
-  'A love letter to [insert place] and its people',
-  'For readers who loved Eleanor Oliphant',
-  'A triumph — Sunday Times',
-  'Breathtaking — Observer',
-  'The most important book of the year — someone, probably',
-  'I literally could not put it down — someone\'s mum',
-  'One woman. One secret. One really long subtitle.',
-  'Based on an extraordinary true story (loosely)',
-  'The debut everyone is pretending to have read',
-];
-
-// ── Colour palettes for covers ──────────────────────────────────
-
 const coverPalettes = [
-  ['#2c1810', '#4a2028', '#1a0a14'],  // dark burgundy
-  ['#0a1628', '#1a2a4a', '#0a0f1e'],  // midnight blue
-  ['#1a2e1a', '#2a4a28', '#0a1a0a'],  // forest green
-  ['#2a1a30', '#4a2850', '#1a0a20'],  // deep purple
-  ['#28180a', '#4a3018', '#1a0f05'],  // rich brown
-  ['#1a1a2e', '#2a2a4a', '#0f0f1e'],  // slate
-  ['#2e1a1a', '#4a2828', '#1e0f0f'],  // deep red
-  ['#0a2828', '#1a4a4a', '#051a1a'],  // teal
-  ['#2e2a1a', '#4a4428', '#1e1a0a'],  // olive gold
-  ['#1a0a28', '#30184a', '#0f051a'],  // royal purple
+  ['#2c1810', '#4a2028', '#1a0a14'],
+  ['#0a1628', '#1a2a4a', '#0a0f1e'],
+  ['#1a2e1a', '#2a4a28', '#0a1a0a'],
+  ['#2a1a30', '#4a2850', '#1a0a20'],
+  ['#28180a', '#4a3018', '#1a0f05'],
+  ['#1a1a2e', '#2a2a4a', '#0f0f1e'],
+  ['#2e1a1a', '#4a2828', '#1e0f0f'],
+  ['#0a2828', '#1a4a4a', '#051a1a'],
+  ['#2e2a1a', '#4a4428', '#1e1a0a'],
+  ['#1a0a28', '#30184a', '#0f051a'],
 ];
+
+// ── Silliness slider ────────────────────────────────────────────
+
+function getSilliness() {
+  return parseInt(document.getElementById('silliness').value) / 100;
+}
+
+function pickFrom(wordList) {
+  const s = getSilliness();
+  const hasSilly = wordList.silly && wordList.silly.length > 0;
+  if (!hasSilly) return wordList.serious[Math.floor(Math.random() * wordList.serious.length)];
+  if (Math.random() < s) {
+    return wordList.silly[Math.floor(Math.random() * wordList.silly.length)];
+  }
+  return wordList.serious[Math.floor(Math.random() * wordList.serious.length)];
+}
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// ── Slider mode labels ──────────────────────────────────────────
+
+const modeLabels = [
+  { max: 10, text: 'Longlist material' },
+  { max: 25, text: 'Shortlisted, probably' },
+  { max: 40, text: 'Literary with an edge' },
+  { max: 60, text: 'Anything could happen' },
+  { max: 75, text: 'Cheerfully questionable' },
+  { max: 90, text: 'Remaindered by Tuesday' },
+  { max: 100, text: 'Straight to the charity shop' },
+];
+
+function updateModeLabel() {
+  const val = parseInt(document.getElementById('silliness').value);
+  const label = modeLabels.find(m => val <= m.max)?.text || '';
+  document.getElementById('slider-mode').textContent = label;
+}
 
 // ── Patterns ────────────────────────────────────────────────────
 
 const patterns = [
   {
-    name: 'The Job Description',
-    formula: 'The [Job] of [Exotic Place]',
-    realBooks: 'The Bookseller of Kabul, The Tattooist of Auschwitz, The Perfumer of Florence',
-    generate: () => `The ${pick(jobs)} of ${pick(exoticPlaces)}`
+    generate: () => `The ${pickFrom(W.jobs)} of ${pickFrom(W.places)}`
   },
   {
-    name: 'The Verb Girl',
-    formula: 'The [Person] Who [Verb] [Noun]',
-    realBooks: 'The Girl Who Kicked the Hornet\'s Nest, The Girl on the Train, The Boy Who Followed His Father',
-    generate: () => `The ${pick(persons)} Who ${pick(pastVerbs)} the ${pick(objects)}`
+    generate: () => `The ${pickFrom(W.persons)} Who ${pickFrom(W.verbs)} the ${pickFrom(W.objects)}`
   },
   {
-    name: 'The Possessive',
-    formula: 'The [Job]\'s [Noun]',
-    realBooks: 'The Time Traveler\'s Wife, The Zookeeper\'s Wife, The Beekeeper\'s Promise',
-    generate: () => `The ${pick(jobs)}'s ${pick(persons) === 'Wife' ? 'Wife' : pick([...objects.map(o => o), 'Wife', 'Daughter', 'Secret', 'Promise', 'Lament', 'Gift', 'Confession', 'Tale', 'Apprentice'])}`
+    generate: () => `The ${pickFrom(W.jobs)}'s ${pickFrom(W.possessiveNouns)}`
   },
   {
-    name: 'A Noun of Nouns',
-    formula: 'A [Noun] of [Noun] and [Noun]',
-    realBooks: 'A Court of Thorns and Roses, A Discovery of Witches, A Gentleman in Moscow',
     generate: () => {
-      let n1 = pick(abstractNouns);
-      let n2, n3;
-      do { n2 = pick(abstractNouns2); } while (n2 === n1);
-      do { n3 = pick(abstractNouns2); } while (n3 === n2 || n3 === n1);
-      return `A ${pick(['Court', 'Garden', 'House', 'Kingdom', 'Library', 'Palace', 'Archive', 'Chronicle', 'Map', 'Cabinet', 'Theatre', 'Catalogue'])} of ${n2} and ${n3}`;
+      let n2 = pickFrom(W.abstractNouns2);
+      let n3;
+      do { n3 = pickFrom(W.abstractNouns2); } while (n3 === n2);
+      return `A ${pickFrom(W.venues)} of ${n2} and ${n3}`;
     }
   },
   {
-    name: 'The Numbered',
-    formula: 'The [Number] [Noun] of [Name]',
-    realBooks: 'The Seven Husbands of Evelyn Hugo, The Seven Deaths of Evelyn Hardcastle, The Three-Body Problem',
-    generate: () => `The ${pick(numbers)} ${pick(pluralNouns)} of ${pick(firstNames)} ${pick(authorLastNames)}`
+    generate: () => `The ${pick(numbers)} ${pickFrom(W.pluralNouns)} of ${pick(firstNames)} ${pick(authorLastNames)}`
   },
   {
-    name: 'The Last Thing',
-    formula: 'The Last [Noun] in/on/from [Place]',
-    realBooks: 'The Last Letter from Your Lover, The Last House on Needless Street, The Last Days of Rabbit Hayes',
-    generate: () => `The Last ${pick(['Letter', 'House', 'Light', 'Song', 'Train', 'Rose', 'Boat', 'Bridge', 'Summer', 'Dance', 'Garden', 'Candle'])} ${pick(['from', 'in', 'on', 'before', 'beyond'])} ${pick(locations)}`
+    generate: () => `The Last ${pickFrom(W.lastNouns)} ${pick(['from', 'in', 'on', 'before', 'beyond'])} ${pickFrom(W.locations)}`
   },
   {
-    name: 'Where the What',
-    formula: 'Where the [Noun] [Verb]',
-    realBooks: 'Where the Crawdads Sing, Where the Wild Things Are, Where the Forest Meets the Stars',
-    generate: () => `Where the ${pick(objects)} ${pick(['Sing', 'Sleep', 'Burn', 'Dance', 'Whisper', 'Bloom', 'Fall', 'Wait', 'Gather', 'Break', 'Hide', 'Dream', 'Vanish', 'Return'])}`
+    generate: () => `Where the ${pickFrom(W.objects)} ${pickFrom(W.whereVerbs)}`
   },
   {
-    name: 'All the Things',
-    formula: 'All the [Adjective] [Noun]',
-    realBooks: 'All the Light We Cannot See, All the Bright Places, All the Missing Girls',
-    generate: () => `All the ${pick(adjectives)} ${pick([...objects, 'Places', 'Things', 'Words', 'Names', 'Days', 'Nights', 'Lives', 'Ways', 'Lies', 'Truths'])}`
+    generate: () => `All the ${pickFrom(W.adjectives)} ${pickFrom(W.objects)}`
   },
   {
-    name: 'The Adjective Noun',
-    formula: 'The [Adjective] [Noun]',
-    realBooks: 'The Silent Patient, The Midnight Library, The Invisible Life of Addie LaRue',
-    generate: () => `The ${pick(adjectives)} ${pick(['Library', 'Patient', 'Garden', 'Architect', 'Orchard', 'Mapmaker', 'Daughter', 'Historian', 'Apothecary', 'Foundling', 'Navigator', 'Alchemist', 'Sanctuary', 'Chronicle'])}`
+    generate: () => `The ${pickFrom(W.adjectives)} ${pickFrom(W.singleNouns)}`
   },
   {
-    name: 'The Life Of',
-    formula: 'The [Adjective] Life of [Name]',
-    realBooks: 'The Secret Life of Bees, The Immortal Life of Henrietta Lacks, The Invisible Life of Addie LaRue',
-    generate: () => `The ${pick(['Secret', 'Invisible', 'Extraordinary', 'Remarkable', 'Impossible', 'Curious', 'Unexpected', 'Improbable'])} Life of ${pick(firstNames)} ${pick(authorLastNames)}`
+    generate: () => `The ${pickFrom(W.lifeAdj)} Life of ${pick(firstNames)} ${pick(authorLastNames)}`
   }
 ];
 
-// ── Helpers ──────────────────────────────────────────────────────
-
-function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+// ── Generate ────────────────────────────────────────────────────
 
 let generatedCount = 0;
 let lastTitle = '';
@@ -611,7 +776,6 @@ let lastTitle = '';
 function generate() {
   const pattern = pick(patterns);
   let title;
-  // Avoid repeating the same title
   do {
     title = pattern.generate();
   } while (title === lastTitle);
@@ -620,29 +784,22 @@ function generate() {
   const titleEl = document.getElementById('book-title');
   const authorEl = document.getElementById('book-author');
   const subtitleEl = document.getElementById('book-subtitle');
-  const formulaEl = document.getElementById('formula-tag');
   const coverEl = document.getElementById('book-cover');
   const stickerEl = coverEl.querySelector('.sticker span');
 
-  // Animate
   titleEl.classList.remove('title-animate');
   void titleEl.offsetWidth;
   titleEl.classList.add('title-animate');
 
-  // Set content
   titleEl.textContent = title;
   authorEl.textContent = `${pick(authorFirstNames)} ${pick(authorLastNames)}`;
-  subtitleEl.textContent = pick(subtitles);
-  formulaEl.innerHTML = `Formula: <strong>${pattern.name}</strong> &mdash; ${pattern.formula}`;
+  subtitleEl.textContent = pickFrom(W.subtitles);
 
-  // Random cover colour
   const palette = pick(coverPalettes);
   coverEl.style.background = `linear-gradient(135deg, ${palette[0]} 0%, ${palette[1]} 40%, ${palette[2]} 100%)`;
 
-  // Random sticker
-  stickerEl.innerHTML = pick(stickers).replace(/\n/g, '<br>');
+  stickerEl.innerHTML = pickFrom(W.stickers).replace(/\n/g, '<br>');
 
-  // Counter
   generatedCount++;
   const counterEl = document.getElementById('counter');
   if (generatedCount === 1) {
@@ -678,14 +835,16 @@ function share() {
 
 document.getElementById('btn-generate').addEventListener('click', generate);
 document.getElementById('btn-share').addEventListener('click', share);
+document.getElementById('silliness').addEventListener('input', updateModeLabel);
 
-// Keyboard shortcut
 document.addEventListener('keydown', (e) => {
   if (e.code === 'Space' && e.target === document.body) {
     e.preventDefault();
     generate();
   }
 });
+
+updateModeLabel();
 </script>
 
 </body>
